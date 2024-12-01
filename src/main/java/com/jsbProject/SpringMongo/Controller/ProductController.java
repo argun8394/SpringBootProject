@@ -1,50 +1,46 @@
 package com.jsbProject.SpringMongo.Controller;
 
-import com.jsbProject.SpringMongo.Model.Product;
-import com.jsbProject.SpringMongo.Repository.ProductRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.jsbProject.SpringMongo.Service.ProductService;
+import com.jsbProject.SpringMongo.Service.ProductServiceImpl;
+import com.jsbProject.SpringMongo.dto.ProductRequest;
+import com.jsbProject.SpringMongo.dto.ProductResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1/products")
+@RequiredArgsConstructor
 public class ProductController {
+    private final ProductServiceImpl productServiceImpl;
 
-@Autowired
-ProductRepo productRepo;
-    @PostMapping("/addProduct")
-    public void addProduct(@RequestBody Product product){
-        productRepo.save(product);
+    public ProductController(ProductServiceImpl productServiceImpl) {
+        this.productServiceImpl = productServiceImpl;
     }
 
-    @GetMapping("/getProduct/{id}")
-    public Product getProduct(@PathVariable Integer id){
-        return productRepo.findById(id).orElse(null);
+    @PostMapping
+    public ProductResponse createProduct(@RequestBody ProductRequest request) {
+        return productServiceImpl.createProduct(request);
     }
 
-    @GetMapping("/fetchProducts")
-    public List<Product> fetchProducts(){
-        return productRepo.findAll();
+    @PutMapping("/{id}")
+    public ProductResponse updateProduct(@PathVariable String id, @RequestBody ProductRequest request) {
+        return productServiceImpl.updateProduct(id, request);
     }
 
-    @PutMapping("/updateProduct")
-    public void updateProduct(@RequestBody Product product){
-        Product data=productRepo.findById(product.getPno()).orElse(null);
-        System.out.println(data);
-
-        //check if null
-        if(data!=null)
-        {
-            data.setName(product.getName());
-            data.setPrice(product.getPrice());
-            data.setQuantity(product.getQuantity());
-            productRepo.save(data);
-        }
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable String id) {
+        productServiceImpl.deleteProduct(id);
     }
 
-    @DeleteMapping("/deleteProduct/{id}")
-    public void deleteProduct(@PathVariable Integer id){
-        productRepo.deleteById(id);
+    @GetMapping("/{id}")
+    public ProductResponse getProduct(@PathVariable String id) {
+        return productServiceImpl.getProduct(id);
     }
 
+    @GetMapping
+    public List<ProductResponse> getAllProducts() {
+        return productServiceImpl.getAllProducts();
+    }
 }

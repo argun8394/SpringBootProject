@@ -1,36 +1,29 @@
 package com.jsbProject.SpringMongo.Controller;
 
-import com.jsbProject.SpringMongo.Model.Cart;
-import com.jsbProject.SpringMongo.Model.Customer;
 import com.jsbProject.SpringMongo.Service.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.jsbProject.SpringMongo.dto.CustomerResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import com.jsbProject.SpringMongo.Service.CustomerServiceImpl;
 
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/api/v1/customers")
+@RequiredArgsConstructor
 public class CustomerController {
+    private final CustomerService customerService;
 
-    @Autowired
-    private CustomerService customerService;
-
-    @PostMapping("/add")
-    public void addCustomer(@RequestBody Customer customer) {
-        customerService.addCustomer(customer);
+    @PostMapping
+    public CustomerResponse addCustomer(@RequestBody CustomerRequest request) {
+        return customerService.addCustomer(request);
     }
 
-    @GetMapping("/{id}/cart")
-    public Cart getCart(@PathVariable Integer id) {
-        return customerService.getCart(id);
+    @GetMapping("/{id}")
+    public CustomerResponse getCustomer(@PathVariable String id) {
+        return customerService.getCustomer(id);
     }
 
-    @PostMapping("/{customerId}/cart/add/{productId}")
-    public void addProductToCart(@PathVariable Integer customerId, @PathVariable Integer productId, @RequestParam Integer quantity) {
-        customerService.addProductToCart(customerId, productId, quantity);
-    }
-
-    @PostMapping("/{customerId}/order/place")
-    public void placeOrder(@PathVariable Integer customerId) {
-        customerService.placeOrder(customerId);
+    @GetMapping
+    public List<CustomerResponse> getAllCustomers() {
+        return customerService.getAllCustomers();
     }
 }
-
